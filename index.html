@@ -9,7 +9,7 @@
     body {
       background: #f5f3f0;
       font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-      padding: 1rem;
+      padding: 0.5rem;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -20,32 +20,32 @@
       max-width: 750px;
       width: 100%;
       background: #fffcf7;
-      border-radius: 2.5rem;
+      border-radius: 1.5rem;
       box-shadow: 0 25px 40px -15px rgba(90, 70, 50, 0.25);
-      padding: 1.8rem 1.5rem 2.5rem;
+      padding: 1.2rem 0.8rem 1.5rem;
       border: 1px solid #ede3d6;
     }
-    h1 { font-size: 2rem; font-weight: 650; color: #4b3a2b; margin-bottom: 0.5rem; }
+    h1 { font-size: 1.5rem; font-weight: 650; color: #4b3a2b; margin-bottom: 0.5rem; }
     .current-date {
-      font-size: 1.1rem; color: #7b6e5e; margin-bottom: 1rem;
+      font-size: 0.9rem; color: #7b6e5e; margin-bottom: 0.8rem;
       font-weight: 500; background: #f3ede4; display: inline-block;
-      padding: 0.3rem 1.2rem; border-radius: 2rem;
+      padding: 0.2rem 0.8rem; border-radius: 2rem;
     }
-    .week-nav { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0 1.5rem; }
+    .week-nav { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 0.8rem 0 1rem; }
     .week-btn {
       background: #fefaf5; border: 1px solid #cfbc9f;
-      padding: 0.6rem 1.3rem; border-radius: 2.5rem;
-      font-weight: 600; color: #4b3a2b; cursor: pointer; font-size: 0.9rem;
+      padding: 0.4rem 0.9rem; border-radius: 2rem;
+      font-weight: 600; color: #4b3a2b; cursor: pointer; font-size: 0.8rem;
     }
     .week-btn.active {
       background: #d9c8b2; border-color: #a78f70; color: #2f261c;
     }
-    .toolbar { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 1.8rem; }
+    .toolbar { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
     .btn {
       background: #fefaf5; border: 1px solid #cfbc9f;
-      padding: 0.5rem 1.2rem; border-radius: 2.5rem;
-      font-weight: 500; color: #4b3a2b; cursor: pointer; font-size: 0.9rem;
-      display: flex; align-items: center; gap: 0.3rem;
+      padding: 0.35rem 0.7rem; border-radius: 2rem;
+      font-weight: 500; color: #4b3a2b; cursor: pointer; font-size: 0.75rem;
+      display: flex; align-items: center; gap: 0.2rem;
     }
     .btn:hover { background: #f3ede4; }
     .btn.primary { background: #ddceb8; border-color: #b3956b; font-weight: 600; }
@@ -53,64 +53,76 @@
     .btn.import { background: #e8d8f0; border-color: #9b7aab; color: #3a1f47; font-weight: 600; }
     .btn.copy { background: #d0dce8; border-color: #7a8fab; color: #1f2c47; font-weight: 600; }
     .day-section {
-      background: #fdfaf6; border-radius: 1.8rem; padding: 1rem;
-      margin-bottom: 1.5rem; border: 1px solid #e7daca;
+      background: #fdfaf6; border-radius: 1.2rem; padding: 0.7rem;
+      margin-bottom: 1rem; border: 1px solid #e7daca;
     }
-    .day-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem; }
+    .day-header { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.5rem; }
     .day-name {
-      font-weight: 700; font-size: 1.3rem; background: #ece1d0;
-      padding: 0.2rem 1.3rem; border-radius: 2rem;
+      font-weight: 700; font-size: 1.1rem; background: #ece1d0;
+      padding: 0.15rem 0.9rem; border-radius: 2rem;
     }
-    .day-date { color: #8b7b67; font-size: 0.9rem; }
+    .day-date { color: #8b7b67; font-size: 0.8rem; }
     .subject-card {
-      background: #fff; border-radius: 1.3rem; padding: 0.9rem 1rem;
-      margin-bottom: 0.7rem; border: 1px solid #eadbc8;
+      background: #fff; border-radius: 1rem; padding: 0.6rem 0.7rem;
+      margin-bottom: 0.5rem; border: 1px solid #eadbc8;
     }
-    .subject-title { font-weight: 700; color: #5d4a35; }
-    .task-list { margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem; }
-    .task-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-    .task-number { font-weight: 600; color: #7b5e3b; min-width: 1.8rem; }
+    .subject-title { font-weight: 700; color: #5d4a35; font-size: 0.9rem; margin-bottom: 0.3rem; }
+    .task-list { display: flex; flex-direction: column; gap: 0.3rem; }
+    .task-row { 
+      display: flex; align-items: center; gap: 0.3rem; 
+      flex-wrap: nowrap;
+    }
+    .task-number { font-weight: 600; color: #7b5e3b; font-size: 0.75rem; min-width: 1.2rem; flex-shrink: 0; }
     .task-input {
-      flex: 2; min-width: 130px; border: 1px solid #d9c4aa;
-      border-radius: 2rem; padding: 0.4rem 0.9rem; background: #fefcf8;
+      flex: 1; min-width: 0; border: 1px solid #d9c4aa;
+      border-radius: 1.5rem; padding: 0.3rem 0.5rem; background: #fefcf8;
+      font-size: 0.75rem;
     }
-    .task-status { font-size: 0.8rem; }
+    .task-status { 
+      font-size: 0.65rem; flex-shrink: 0;
+      padding: 0.15rem 0.4rem; border-radius: 1rem;
+      white-space: nowrap;
+    }
     .status-completed {
-      color: #2c5a1f; background: #e3f0da; padding: 0.25rem 0.8rem; border-radius: 1rem;
+      color: #2c5a1f; background: #e3f0da;
     }
     .status-delayed {
-      color: #9b4c30; background: #fbe9e2; padding: 0.25rem 0.8rem; border-radius: 1rem;
+      color: #9b4c30; background: #fbe9e2;
     }
     .mini-btn {
-      border: 1px solid #d6c1a3; background: #fffbf5; border-radius: 2rem;
-      padding: 0.35rem 0.8rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;
+      border: 1px solid #d6c1a3; background: #fffbf5; border-radius: 1.5rem;
+      padding: 0.25rem 0.5rem; font-size: 0.65rem; font-weight: 600; cursor: pointer;
+      flex-shrink: 0; white-space: nowrap;
     }
     .done-btn { background: #d4e2d0; border-color: #9bb38b; color: #2c4720; }
     .delay-btn { background: #f7e2d6; border-color: #dbaa8b; color: #613c2a; }
-    .add-task-btn, .remove-task-btn { background: #f4ede1; border-color: #ccb690; font-size: 0.8rem; }
+    .add-task-btn, .remove-task-btn { background: #f4ede1; border-color: #ccb690; }
     .set-none-btn {
       background: #e8e8e8; border-color: #bbb; color: #666;
-      font-size: 0.75rem; padding: 0.35rem 0.8rem; border-radius: 2rem; cursor: pointer;
+      font-size: 0.65rem; padding: 0.25rem 0.5rem; border-radius: 1.5rem; cursor: pointer; flex-shrink: 0;
+    }
+    .btn-row {
+      display: flex; gap: 0.3rem; margin-top: 0.2rem;
     }
     .summary-box {
-      background: #f7efe2; border-radius: 1.8rem; padding: 1.2rem;
-      margin-top: 1.5rem; border: 1px solid #dbc6a8;
+      background: #f7efe2; border-radius: 1.2rem; padding: 1rem;
+      margin-top: 1rem; border: 1px solid #dbc6a8;
     }
-    .stats-grid { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .stats-grid { display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.85rem; }
     .no-task-badge {
-      background: #f5f5f5; color: #999; padding: 0.4rem 1rem;
-      border-radius: 2rem; font-style: italic; font-size: 0.9rem;
+      background: #f5f5f5; color: #999; padding: 0.3rem 0.7rem;
+      border-radius: 1.5rem; font-style: italic; font-size: 0.75rem;
       border: 1px dashed #ccc; display: inline-block;
     }
     .copy-hint {
-      background: #e8f0fa; color: #3a5a8c; padding: 0.5rem 1rem;
-      border-radius: 1rem; font-size: 0.85rem; margin-bottom: 1rem;
+      background: #e8f0fa; color: #3a5a8c; padding: 0.4rem 0.8rem;
+      border-radius: 1rem; font-size: 0.75rem; margin-bottom: 0.5rem;
       display: none; border: 1px solid #b8cfe0;
     }
     .copy-hint.show { display: block; }
     .sync-hint {
-      background: #f0e8f5; color: #5a2d6c; padding: 0.5rem 1rem;
-      border-radius: 1rem; font-size: 0.85rem; margin-bottom: 1rem;
+      background: #f0e8f5; color: #5a2d6c; padding: 0.4rem 0.8rem;
+      border-radius: 1rem; font-size: 0.75rem; margin-bottom: 0.5rem;
       display: none; border: 1px solid #d0b8e0;
     }
     .sync-hint.show { display: block; }
@@ -128,18 +140,18 @@
   </div>
 
   <div class="toolbar">
-    <button class="btn primary" id="summaryBtn">📋 全部完成汇总</button>
-    <button class="btn" id="resetCurrentWeekBtn">🔄 重置当前周</button>
-    <button class="btn export" id="exportBtn">📥 导出Excel</button>
-    <button class="btn import" id="exportDataBtn">📤 导出数据(同步)</button>
-    <button class="btn import" id="importDataBtn">📥 导入数据(同步)</button>
-    <button class="btn copy" id="copyLastWeekBtn" style="display:none;">📋 复制上周计划</button>
+    <button class="btn primary" id="summaryBtn">📋 汇总</button>
+    <button class="btn" id="resetCurrentWeekBtn">🔄 重置</button>
+    <button class="btn export" id="exportBtn">📥 Excel</button>
+    <button class="btn import" id="exportDataBtn">📤 导出同步</button>
+    <button class="btn import" id="importDataBtn">📥 导入同步</button>
+    <button class="btn copy" id="copyLastWeekBtn" style="display:none;">📋 复制上周</button>
   </div>
 
   <div class="copy-hint" id="copyHint">✅ 已成功复制上周计划！</div>
   <div class="sync-hint" id="syncHint"></div>
 
-  <div id="weekLabel" style="font-weight:600; margin-bottom:1rem; color:#4b3a2b;"></div>
+  <div id="weekLabel" style="font-weight:600; margin-bottom:0.5rem; color:#4b3a2b; font-size:0.85rem;"></div>
   <div id="planContainer"></div>
 
   <div id="summaryPanel" class="summary-box" style="display:none;">
@@ -165,7 +177,7 @@
       };
     }
 
-    const STORAGE_KEY = 'study_plan_final_v1';
+    const STORAGE_KEY = 'study_plan_final_v2';
 
     function loadData() {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -202,7 +214,7 @@
       const text = JSON.stringify(exportObj);
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(() => {
-          showHint('syncHint', '✅ 数据已复制到剪贴板！请粘贴发送到微信，在另一设备上导入。', 'success');
+          showHint('syncHint', '✅ 数据已复制，请发到微信', 'success');
         }).catch(() => downloadSyncFile(text));
       } else {
         downloadSyncFile(text);
@@ -211,29 +223,27 @@
 
     function downloadSyncFile(text) {
       const blob = new Blob([text], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = '学习计划_同步数据_' + new Date().toISOString().slice(0,10) + '.json';
+      a.href = URL.createObjectURL(blob);
+      a.download = '同步数据_' + new Date().toISOString().slice(0,10) + '.json';
       a.click();
-      URL.revokeObjectURL(url);
-      showHint('syncHint', '✅ 数据文件已下载！请发送到微信，在另一设备上导入。', 'success');
+      showHint('syncHint', '✅ 文件已下载，请发到微信', 'success');
     }
 
     function importSyncData() {
-      const text = prompt('请粘贴从另一设备导出的同步数据：');
+      const text = prompt('请粘贴同步数据：');
       if (!text || !text.trim()) return;
       try {
         const importObj = JSON.parse(text.trim());
         if (!importObj.data) throw new Error('无效数据');
-        if (confirm('确定导入数据吗？当前数据将被覆盖。')) {
+        if (confirm('确定导入数据吗？')) {
           allData = importObj.data;
           saveData();
-          showHint('syncHint', '✅ 数据导入成功！', 'success');
+          showHint('syncHint', '✅ 导入成功！', 'success');
           renderCurrentWeek();
         }
       } catch (e) {
-        showHint('syncHint', '❌ 数据格式不正确，请重新复制粘贴。', 'error');
+        showHint('syncHint', '❌ 格式不正确', 'error');
       }
     }
 
@@ -243,7 +253,7 @@
       hint.className = (id === 'syncHint' ? 'sync-hint' : 'copy-hint') + ' show';
       hint.style.background = type === 'error' ? '#fde8e8' : (id === 'syncHint' ? '#f0e8f5' : '#e8f0fa');
       hint.style.color = type === 'error' ? '#8c2d2d' : (id === 'syncHint' ? '#5a2d6c' : '#3a5a8c');
-      setTimeout(() => hint.classList.remove('show'), 4000);
+      setTimeout(() => hint.classList.remove('show'), 3000);
     }
 
     let currentOffset = 0;
@@ -319,7 +329,7 @@
           if (empty) {
             const row = document.createElement('div');
             row.className = 'task-row';
-            row.innerHTML = `<span class="no-task-badge">📭 当天无任务</span><button class="mini-btn add-task-btn">+ 添加任务</button>`;
+            row.innerHTML = `<span class="no-task-badge">📭 无任务</span><button class="mini-btn add-task-btn">+添加</button>`;
             row.querySelector('.add-task-btn').onclick = () => addTask(dayKey, subj);
             taskList.appendChild(row);
           } else {
@@ -331,10 +341,10 @@
               row.innerHTML = `
                 <span class="task-number">${idx+1}.</span>
                 <input class="task-input" value="${taskText.replace(/"/g,'&quot;')}">
-                <span class="task-status ${state==='completed'?'status-completed':(state==='delayed'?'status-delayed':'')}">${state==='completed'?'✅完成':(state==='delayed'?'⏳延期':'')}</span>
+                <span class="task-status ${state==='completed'?'status-completed':(state==='delayed'?'status-delayed':'')}">${state==='completed'?'✅':(state==='delayed'?'⏳':'')}</span>
                 <button class="mini-btn done-btn">完成</button>
                 <button class="mini-btn delay-btn">延期</button>
-                <button class="mini-btn remove-task-btn">🗑️</button>
+                <button class="mini-btn remove-task-btn">✕</button>
               `;
               row.querySelector('.done-btn').onclick = () => toggleTaskState(dayKey, subj, taskText, 'completed');
               row.querySelector('.delay-btn').onclick = () => toggleTaskState(dayKey, subj, taskText, 'delayed');
@@ -344,9 +354,8 @@
             });
 
             const btnRow = document.createElement('div');
-            btnRow.className = 'task-row';
-            btnRow.style.marginTop = '0.3rem';
-            btnRow.innerHTML = `<button class="mini-btn add-task-btn">+ 添加任务</button><button class="set-none-btn">设为无任务</button>`;
+            btnRow.className = 'btn-row';
+            btnRow.innerHTML = `<button class="mini-btn add-task-btn">+任务</button><button class="set-none-btn">设为无</button>`;
             btnRow.querySelector('.add-task-btn').onclick = () => addTask(dayKey, subj);
             btnRow.querySelector('.set-none-btn').onclick = () => setNoTask(dayKey, subj);
             taskList.appendChild(btnRow);
@@ -370,7 +379,7 @@
     function addTask(day, subj) {
       const weekData = getWeekData(currentWeekKey);
       if (isSubjectEmpty(weekData.plan, day, subj)) weekData.plan[day][subj] = [];
-      const newTask = prompt('请输入新任务内容：');
+      const newTask = prompt('请输入新任务：');
       if (!newTask || !newTask.trim()) return;
       weekData.plan[day][subj].push(newTask.trim());
       updateWeekData(currentWeekKey, weekData);
@@ -378,7 +387,7 @@
     }
 
     function setNoTask(day, subj) {
-      if (confirm(`确定将${subj}设为"当天无任务"吗？`)) {
+      if (confirm(`确定将${subj}设为"无任务"吗？`)) {
         const weekData = getWeekData(currentWeekKey);
         (weekData.plan[day][subj] || []).forEach(task => delete weekData.taskStatus[`${day}||${subj}||${task}`]);
         weekData.plan[day][subj] = ['无'];
@@ -413,7 +422,7 @@
     }
 
     function resetCurrentWeek() {
-      if (confirm('确定重置当前周所有任务状态吗？')) {
+      if (confirm('确定重置当前周所有状态吗？')) {
         const weekData = getWeekData(currentWeekKey);
         weekData.taskStatus = {};
         updateWeekData(currentWeekKey, weekData);
@@ -423,7 +432,7 @@
 
     function copyLastWeekPlan() {
       if (currentOffset !== 1) return;
-      if (!confirm('确定要复制上周的计划到下周吗？')) return;
+      if (!confirm('复制上周计划到下周？')) return;
       const lastWeekKey = getWeekKey(getMondayByOffset(currentOffset - 1));
       const lastWeekData = getWeekData(lastWeekKey);
       const newPlan = {};
@@ -458,9 +467,9 @@
         }
       }
       document.getElementById('totalStats').innerHTML = `
-        <div>✅ 总完成: <strong>${totalCompleted}</strong></div>
-        <div>⏳ 总延期: <strong>${totalDelayed}</strong></div>
-        <div>📌 总任务数: <strong>${totalTasks}</strong></div>
+        <div>✅ 完成: <strong>${totalCompleted}</strong></div>
+        <div>⏳ 延期: <strong>${totalDelayed}</strong></div>
+        <div>📌 总计: <strong>${totalTasks}</strong></div>
         <div>📈 完成率: <strong>${totalTasks ? Math.round(totalCompleted/totalTasks*100) : 0}%</strong></div>
       `;
       document.getElementById('summaryPanel').style.display = 'block';
@@ -514,7 +523,7 @@
       a.download = `许家桐理财投资进度_${formatDate(monday)}_${formatDate(sunday)}.xls`;
       a.click();
       URL.revokeObjectURL(a.href);
-      alert('✅ Excel文件已导出！');
+      alert('✅ Excel已导出！');
     }
 
     function getDayRowspan(plan, dayKey) {
@@ -542,7 +551,7 @@
     document.getElementById('exportDataBtn').onclick = exportSyncData;
     document.getElementById('importDataBtn').onclick = importSyncData;
 
-    document.getElementById('currentDateDisplay').textContent = `📅 今天是：${formatDate(new Date())}`;
+    document.getElementById('currentDateDisplay').textContent = `📅 ${formatDate(new Date())}`;
     loadData();
     renderCurrentWeek();
   })();
