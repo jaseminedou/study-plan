@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>📚 许家桐理财投资进度</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #f5f3f0;
+      font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      color: #2e241f;
+    }
+    .container {
+      max-width: 750px;
+      width: 100%;
+      background: #fffcf7;
+      border-radius: 2.5rem;
+      box-shadow: 0 25px 40px -15px rgba(90, 70, 50, 0.25);
+      padding: 1.8rem 1.5rem 2.5rem;
+      border: 1px solid #ede3d6;
+    }
+    h1 { font-size: 2rem; font-weight: 650; color: #4b3a2b; margin-bottom: 0.5rem; }
+    .current-date {
+      font-size: 1.1rem; color: #7b6e5e; margin-bottom: 0.3rem;
+      font-weight: 500; background: #f3ede4; display: inline-block;
+      padding: 0.3rem 1.2rem; border-radius: 2rem;
+    }
+    .debug-info {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 1rem;
+      padding: 0.8rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.8rem;
+      color: #856404;
+      display: block;
+      word-break: break-all;
+    }
+    .sync-status {
+      font-size: 0.85rem; margin-bottom: 0.5rem;
+      display: flex; align-items: center; gap: 0.3rem; cursor: pointer;
+    }
+    .sync-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #5a7d4a; display: inline-block;
+    }
+    .sync-dot.syncing { background: #b3956b; animation: pulse 1s infinite; }
+    .sync-dot.error { background: #c44; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .week-nav { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0 1.5rem; }
+    .week-btn {
+      background: #fefaf5; border: 1px solid #cfbc9f;
+      padding: 0.6rem 1.3rem; border-radius: 2.5rem;
+      font-weight: 600; color: #4b3a2b; cursor: pointer; font-size: 0.9rem;
+    }
+    .week-btn.active {
+      background: #d9c8b2; border-color: #a78f70; color: #2f261c;
+      box-shadow: 0 4px 10px rgba(140, 110, 70, 0.25);
+    }
+    .toolbar { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 1.8rem; }
+    .btn {
+      background: #fefaf5; border: 1px solid #cfbc9f;
+      padding: 0.5rem 1.2rem; border-radius: 2.5rem;
+      font-weight: 500; color: #4b3a2b; cursor: pointer; font-size: 0.9rem;
+    }
+    .btn:hover { background: #f3ede4; }
+    .btn.primary { background: #ddceb8; border-color: #b3956b; font-weight: 600; }
+    .btn.export { background: #d4e8d0; border-color: #8bab7a; color: #2c4720; font-weight: 600; }
+    .btn.copy { background: #d0dce8; border-color: #7a8fab; color: #1f2c47; font-weight: 600; }
+    .day-section {
+      background: #fdfaf6; border-radius: 1.8rem; padding: 1rem;
+      margin-bottom: 1.5rem; border: 1px solid #e7daca;
+    }
+    .day-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem; }
+    .day-name {
+      font-weight: 700; font-size: 1.3rem; background: #ece1d0;
+      padding: 0.2rem 1.3rem; border-radius: 2rem;
+    }
+    .day-date { color: #8b7b67; font-size: 0.9rem; }
+    .subject-card {
+      background: #fff; border-radius: 1.3rem; padding: 0.9rem 1rem;
+      margin-bottom: 0.7rem; border: 1px solid #eadbc8;
+    }
+    .subject-title { font-weight: 700; color: #5d4a35; }
+    .task-list { margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem; }
+    .task-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .task-number { font-weight: 600; color: #7b5e3b; min-width: 1.8rem; }
+    .task-input {
+      flex: 2; min-width: 130px; border: 1px solid #d9c4aa;
+      border-radius: 2rem; padding: 0.4rem 0.9rem; background: #fefcf8;
+    }
+    .task-status { font-size: 0.8rem; }
+    .status-completed {
+      color: #2c5a1f; background: #e3f0da; padding: 0.25rem 0.8rem; border-radius: 1rem;
+    }
+    .status-delayed {
+      color: #9b4c30; background: #fbe9e2; padding: 0.25rem 0.8rem; border-radius: 1rem;
+    }
+    .mini-btn {
+      border: 1px solid #d6c1a3; background: #fffbf5; border-radius: 2rem;
+      padding: 0.35rem 0.8rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;
+    }
+    .done-btn { background: #d4e2d0; border-color: #9bb38b; color: #2c4720; }
+    .delay-btn { background: #f7e2d6; border-color: #dbaa8b; color: #613c2a; }
+    .add-task-btn, .remove-task-btn { background: #f4ede1; border-color: #ccb690; font-size: 0.8rem; }
+    .set-none-btn {
+      background: #e8e8e8; border-color: #bbb; color: #666;
+      font-size: 0.75rem; padding: 0.35rem 0.8rem; border-radius: 2rem; cursor: pointer;
+    }
+    .summary-box {
+      background: #f7efe2; border-radius: 1.8rem; padding: 1.2rem;
+      margin-top: 1.5rem; border: 1px solid #dbc6a8;
+    }
+    .stats-grid { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .no-task-badge {
+      background: #f5f5f5; color: #999; padding: 0.4rem 1rem;
+      border-radius: 2rem; font-style: italic; font-size: 0.9rem;
+      border: 1px dashed #ccc; display: inline-block;
+    }
+    .copy-hint {
+      background: #e8f0fa; color: #3a5a8c; padding: 0.5rem 1rem;
+      border-radius: 1rem; font-size: 0.85rem; margin-bottom: 1rem;
+      display: none; border: 1px solid #b8cfe0;
+    }
+    .copy-hint.show { display: block; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>📚 许家桐理财投资进度</h1>
+  <div class="current-date" id="currentDateDisplay"></div>
+  
+  <div class="sync-status" id="syncStatus" title="点击手动同步">
+    <span class="sync-dot" id="syncDot"></span>
+    <span id="syncText">正在初始化...</span>
+  </div>
+  
+  <div class="debug-info" id="debugInfo" style="display:none;"></div>
+
+  <div class="week-nav">
+    <button class="week-btn" data-week-offset="-1">📅 上周</button>
+    <button class="week-btn active" data-week-offset="0">📌 本周</button>
+    <button class="week-btn" data-week-offset="1">📝 下周计划</button>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn primary" id="summaryBtn">📋 全部完成汇总</button>
+    <button class="btn" id="resetCurrentWeekBtn">🔄 重置当前周</button>
+    <button class="btn export" id="exportBtn">📥 导出Excel</button>
+    <button class="btn copy" id="copyLastWeekBtn" style="display:none;">📋 复制上周计划</button>
+  </div>
+
+  <div class="copy-hint" id="copyHint">✅ 已成功复制上周计划！</div>
+
+  <div id="weekLabel" style="font-weight:600; margin-bottom:1rem; color:#4b3a2b;"></div>
+  <div id="planContainer"></div>
+
+  <div id="summaryPanel" class="summary-box" style="display:none;">
+    <h3>📊 从开始至今完成情况</h3>
+    <div id="totalStats" class="stats-grid"></div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ========== 配置 ==========
+    const TCB_ENV_ID = 'ai-study-d1gpjwvjy7653a66a';
+    const COLLECTION_NAME = 'ai-study';
+    
+    const SUBJECTS = ['语文', '数学', '英语', '小四门'];
+    const DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+    const DAY_LABELS = ['周一','周二','周三','周四','周五','周六','周日'];
+
+    let cloudData = {};
+    let collection = null;
+    let isConnected = false;
+    let debugLogs = [];
+
+    function debug(msg) {
+      console.log(msg);
+      debugLogs.push(new Date().toLocaleTimeString() + ': ' + msg);
+      const debugDiv = document.getElementById('debugInfo');
+      debugDiv.style.display = 'block';
+      debugDiv.innerHTML = debugLogs.slice(-8).join('<br>');
+    }
+
+    function updateSyncStatus(text, isError) {
+      const dot = document.getElementById('syncDot');
+      const statusText = document.getElementById('syncText');
+      dot.className = 'sync-dot';
+      if (isError) dot.classList.add('error');
+      statusText.textContent = text;
+    }
+
+    function getDefaultTasks() {
+      return {
+        '语文': ['课文朗读'],
+        '数学': ['课本习题'],
+        '英语': ['背单词'],
+        '小四门': ['知识点背诵']
+      };
+    }
+
+    const STORAGE_KEY = 'study_plan_local_v3';
+
+    function loadFromLocal() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : {};
+    }
+
+    function saveToLocal(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    // 加载SDK
+    function loadSDK() {
+      return new Promise((resolve) => {
+        debug('加载SDK...');
+        const script = document.createElement('script');
+        script.src = 'https://web-9gikcbug35bad3a8-1304825656.tcloudbaseapp.com/sdk/2.0.0/tcb.js';
+        script.onload = () => {
+          debug('SDK加载成功');
+          resolve(true);
+        };
+        script.onerror = () => {
+          debug('SDK地址1失败，尝试地址2...');
+          const script2 = document.createElement('script');
+          script2.src = 'https://imgcache.qq.com/qcloud/tcbjs/2.0.0/tcb.js';
+          script2.onload = () => {
+            debug('SDK加载成功(地址2)');
+            resolve(true);
+          };
+          script2.onerror = () => {
+            debug('SDK加载失败');
+            resolve(false);
+          };
+          document.head.appendChild(script2);
+        };
+        document.head.appendChild(script);
+      });
+    }
+
+    async function initCloud() {
+      const sdkLoaded = await loadSDK();
+      if (!sdkLoaded) {
+        updateSyncStatus('⚠️ 离线模式（SDK加载失败）', true);
+        cloudData = loadFromLocal();
+        renderCurrentWeek();
+        return;
+      }
+
+      try {
+        debug('初始化tcb...');
+        const app = tcb.init({ env: TCB_ENV_ID });
+        
+        debug('匿名登录...');
+        const auth = app.auth({ persistence: 'local' });
+        await auth.anonymousAuthProvider().signIn();
+        debug('登录成功');
+        
+        const db = app.database();
+        collection = db.collection(COLLECTION_NAME);
+        debug('数据库连接成功');
+        
+        isConnected = true;
+        updateSyncStatus('✅ 云端已连接', false);
+        
+        await loadFromCloud();
+        renderCurrentWeek();
+        
+      } catch (error) {
+        debug('错误: ' + error.message);
+        updateSyncStatus('⚠️ 离线模式', true);
+        cloudData = loadFromLocal();
+        renderCurrentWeek();
+      }
+    }
+
+    async function loadFromCloud() {
+      if (!collection) { cloudData = loadFromLocal(); return; }
+      try {
+        debug('读取云端数据...');
+        const result = await collection.doc('main_data').get();
+        if (result.data && result.data.length > 0) {
+          cloudData = result.data[0].data || {};
+          debug('云端数据加载成功');
+        } else {
+          debug('云端无数据，使用本地');
+          cloudData = loadFromLocal();
+        }
+        saveToLocal(cloudData);
+      } catch (error) {
+        debug('读取失败: ' + error.message);
+        cloudData = loadFromLocal();
+      }
+    }
+
+    async function saveToCloud() {
+      if (!collection) { saveToLocal(cloudData); return; }
+      try {
+        debug('保存到云端...');
+        await collection.doc('main_data').set({
+          data: cloudData,
+          updatedAt: new Date().toISOString()
+        });
+        saveToLocal(cloudData);
+        debug('保存成功');
+      } catch (error) {
+        debug('保存失败: ' + error.message);
+        saveToLocal(cloudData);
+      }
+    }
+
+    function getWeekData(weekKey) {
+      if (!cloudData[weekKey]) {
+        const defaultTasks = getDefaultTasks();
+        const plan = {};
+        for (let d of DAYS) {
+          plan[d] = {};
+          for (let subj of SUBJECTS) {
+            plan[d][subj] = [...defaultTasks[subj]];
+          }
+        }
+        cloudData[weekKey] = { plan: plan, taskStatus: {} };
+        saveToCloud();
+      }
+      return cloudData[weekKey];
+    }
+
+    function updateWeekData(weekKey, newData) {
+      cloudData[weekKey] = newData;
+      saveToCloud();
+    }
+
+    let currentOffset = 0;
+    let currentWeekKey = '';
+
+    function getMonday(date) {
+      const d = new Date(date);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      return new Date(d.setDate(diff));
+    }
+
+    function getWeekKey(mondayDate) {
+      const year = mondayDate.getFullYear();
+      const firstMonday = getMonday(new Date(year, 0, 1));
+      const weekNum = Math.floor((mondayDate - firstMonday) / (7*86400000)) + 1;
+      return `${year}-W${weekNum.toString().padStart(2,'0')}`;
+    }
+
+    function getMondayByOffset(offset) {
+      const today = new Date();
+      const baseMonday = getMonday(today);
+      const targetMonday = new Date(baseMonday);
+      targetMonday.setDate(baseMonday.getDate() + offset * 7);
+      return targetMonday;
+    }
+
+    function formatDate(date) {
+      return `${date.getFullYear()}年${String(date.getMonth()+1).padStart(2,'0')}月${String(date.getDate()).padStart(2,'0')}日`;
+    }
+
+    function getDateForDay(monday, dayIndex) {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + dayIndex);
+      return date;
+    }
+
+    function isSubjectEmpty(plan, dayKey, subj) {
+      const tasks = plan[dayKey]?.[subj] || [];
+      return tasks.length === 0 || (tasks.length === 1 && tasks[0] === '无');
+    }
+
+    function renderCurrentWeek() {
+      const monday = getMondayByOffset(currentOffset);
+      currentWeekKey = getWeekKey(monday);
+      const sunday = getDateForDay(monday, 6);
+      document.getElementById('weekLabel').textContent = `📆 ${formatDate(monday)} ~ ${formatDate(sunday)}`;
+      document.getElementById('copyLastWeekBtn').style.display = (currentOffset === 1) ? 'inline-flex' : 'none';
+
+      const weekData = getWeekData(currentWeekKey);
+      const plan = weekData.plan;
+      const taskStatus = weekData.taskStatus || {};
+      const container = document.getElementById('planContainer');
+      container.innerHTML = '';
+
+      for (let i = 0; i < DAYS.length; i++) {
+        const dayKey = DAYS[i];
+        const dayDate = getDateForDay(monday, i);
+        const daySection = document.createElement('div');
+        daySection.className = 'day-section';
+        daySection.innerHTML = `<div class="day-header"><span class="day-name">${DAY_LABELS[i]}</span><span class="day-date">${formatDate(dayDate)}</span></div>`;
+        const subjectsContainer = document.createElement('div');
+
+        for (let subj of SUBJECTS) {
+          const tasks = plan[dayKey]?.[subj] || [];
+          const empty = isSubjectEmpty(plan, dayKey, subj);
+          const card = document.createElement('div');
+          card.className = 'subject-card';
+          card.innerHTML = `<div class="subject-title">📘 ${subj}</div>`;
+          const taskList = document.createElement('div');
+          taskList.className = 'task-list';
+
+          if (empty) {
+            const row = document.createElement('div');
+            row.className = 'task-row';
+            row.innerHTML = `<span class="no-task-badge">📭 当天无任务</span><button class="mini-btn add-task-btn">+ 添加任务</button>`;
+            row.querySelector('.add-task-btn').onclick = () => addTask(dayKey, subj);
+            taskList.appendChild(row);
+          } else {
+            tasks.forEach((taskText, idx) => {
+              if (taskText === '无') return;
+              const state = taskStatus[`${dayKey}||${subj}||${taskText}`] || null;
+              const row = document.createElement('div');
+              row.className = 'task-row';
+              row.innerHTML = `
+                <span class="task-number">${idx+1}.</span>
+                <input class="task-input" value="${taskText.replace(/"/g,'&quot;')}">
+                <span class="task-status ${state==='completed'?'status-completed':(state==='delayed'?'status-delayed':'')}">${state==='completed'?'✅完成':(state==='delayed'?'⏳延期':'')}</span>
+                <button class="mini-btn done-btn">完成</button>
+                <button class="mini-btn delay-btn">延期</button>
+                <button class="mini-btn remove-task-btn">🗑️</button>
+              `;
+              row.querySelector('.done-btn').onclick = () => toggleTaskState(dayKey, subj, taskText, 'completed');
+              row.querySelector('.delay-btn').onclick = () => toggleTaskState(dayKey, subj, taskText, 'delayed');
+              row.querySelector('.remove-task-btn').onclick = () => removeTask(dayKey, subj, idx);
+              row.querySelector('.task-input').onchange = (e) => updateTaskText(dayKey, subj, idx, e.target.value);
+              taskList.appendChild(row);
+            });
+
+            const btnRow = document.createElement('div');
+            btnRow.className = 'task-row';
+            btnRow.style.marginTop = '0.3rem';
+            btnRow.innerHTML = `<button class="mini-btn add-task-btn">+ 添加任务</button><button class="set-none-btn">设为无任务</button>`;
+            btnRow.querySelector('.add-task-btn').onclick = () => addTask(dayKey, subj);
+            btnRow.querySelector('.set-none-btn').onclick = () => setNoTask(dayKey, subj);
+            taskList.appendChild(btnRow);
+          }
+          card.appendChild(taskList);
+          subjectsContainer.appendChild(card);
+        }
+        daySection.appendChild(subjectsContainer);
+        container.appendChild(daySection);
+      }
+    }
+
+    function toggleTaskState(day, subj, taskText, newState) {
+      const weekData = getWeekData(currentWeekKey);
+      const key = `${day}||${subj}||${taskText}`;
+      weekData.taskStatus[key] = (weekData.taskStatus[key] === newState) ? null : newState;
+      updateWeekData(currentWeekKey, weekData);
+      renderCurrentWeek();
+    }
+
+    function addTask(day, subj) {
+      const weekData = getWeekData(currentWeekKey);
+      if (isSubjectEmpty(weekData.plan, day, subj)) weekData.plan[day][subj] = [];
+      const newTask = prompt('请输入新任务内容：');
+      if (!newTask || !newTask.trim()) return;
+      weekData.plan[day][subj].push(newTask.trim());
+      updateWeekData(currentWeekKey, weekData);
+      renderCurrentWeek();
+    }
+
+    function setNoTask(day, subj) {
+      if (confirm(`确定将${subj}设为"当天无任务"吗？`)) {
+        const weekData = getWeekData(currentWeekKey);
+        (weekData.plan[day][subj] || []).forEach(task => delete weekData.taskStatus[`${day}||${subj}||${task}`]);
+        weekData.plan[day][subj] = ['无'];
+        updateWeekData(currentWeekKey, weekData);
+        renderCurrentWeek();
+      }
+    }
+
+    function removeTask(day, subj, idx) {
+      const weekData = getWeekData(currentWeekKey);
+      const tasks = weekData.plan[day][subj];
+      const removed = tasks.splice(idx, 1)[0];
+      delete weekData.taskStatus[`${day}||${subj}||${removed}`];
+      if (tasks.length === 0) weekData.plan[day][subj] = ['无'];
+      updateWeekData(currentWeekKey, weekData);
+      renderCurrentWeek();
+    }
+
+    function updateTaskText(day, subj, idx, newText) {
+      if (!newText.trim()) return;
+      const weekData = getWeekData(currentWeekKey);
+      const oldText = weekData.plan[day][subj][idx];
+      weekData.plan[day][subj][idx] = newText.trim();
+      const oldKey = `${day}||${subj}||${oldText}`;
+      const newKey = `${day}||${subj}||${newText.trim()}`;
+      if (weekData.taskStatus[oldKey]) {
+        weekData.taskStatus[newKey] = weekData.taskStatus[oldKey];
+        delete weekData.taskStatus[oldKey];
+      }
+      updateWeekData(currentWeekKey, weekData);
+      renderCurrentWeek();
+    }
+
+    function resetCurrentWeek() {
+      if (confirm('确定重置当前周所有任务状态吗？')) {
+        const weekData = getWeekData(currentWeekKey);
+        weekData.taskStatus = {};
+        updateWeekData(currentWeekKey, weekData);
+        renderCurrentWeek();
+      }
+    }
+
+    function copyLastWeekPlan() {
+      if (currentOffset !== 1) return;
+      if (!confirm('确定要复制上周的计划到下周吗？')) return;
+      const lastWeekKey = getWeekKey(getMondayByOffset(currentOffset - 1));
+      const lastWeekData = getWeekData(lastWeekKey);
+      const newPlan = {};
+      for (let d of DAYS) {
+        newPlan[d] = {};
+        for (let subj of SUBJECTS) {
+          newPlan[d][subj] = [...(lastWeekData.plan[d]?.[subj] || getDefaultTasks()[subj])];
+        }
+      }
+      cloudData[currentWeekKey] = { plan: newPlan, taskStatus: {} };
+      saveToCloud();
+      document.getElementById('copyHint').classList.add('show');
+      setTimeout(() => document.getElementById('copyHint').classList.remove('show'), 3000);
+      renderCurrentWeek();
+    }
+
+    function showTotalSummary() {
+      let totalCompleted = 0, totalDelayed = 0, totalTasks = 0;
+      for (let data of Object.values(cloudData)) {
+        const plan = data.plan || {};
+        const status = data.taskStatus || {};
+        for (let day of DAYS) {
+          for (let subj of SUBJECTS) {
+            (plan[day]?.[subj] || []).forEach(task => {
+              if (task === '无') return;
+              totalTasks++;
+              const key = `${day}||${subj}||${task}`;
+              if (status[key] === 'completed') totalCompleted++;
+              else if (status[key] === 'delayed') totalDelayed++;
+            });
+          }
+        }
+      }
+      document.getElementById('totalStats').innerHTML = `
+        <div>✅ 总完成: <strong>${totalCompleted}</strong></div>
+        <div>⏳ 总延期: <strong>${totalDelayed}</strong></div>
+        <div>📌 总任务数: <strong>${totalTasks}</strong></div>
+        <div>📈 完成率: <strong>${totalTasks ? Math.round(totalCompleted/totalTasks*100) : 0}%</strong></div>
+      `;
+      document.getElementById('summaryPanel').style.display = 'block';
+    }
+
+    function exportToExcel() {
+      const monday = getMondayByOffset(currentOffset);
+      const weekData = getWeekData(currentWeekKey);
+      const plan = weekData.plan;
+      const taskStatus = weekData.taskStatus || {};
+      const sunday = getDateForDay(monday, 6);
+      
+      let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"><style>
+        table{border-collapse:collapse} th,td{border:1px solid #000;padding:8px 12px;text-align:center;font-size:14px}
+        th{background-color:#d9c8b2} .day-header{background-color:#f0e6d3;font-weight:bold}
+        .completed{background-color:#d4e2d0;color:#2c5a1f} .delayed{background-color:#fbe9e2;color:#9b4c30}
+        .no-task{color:#999} .title-row td{font-size:16px;font-weight:bold;border:none;padding:10px}
+      </style></head><body><table>
+        <tr class="title-row"><td colspan="4">许家桐理财投资进度 - ${formatDate(monday)} ~ ${formatDate(sunday)}</td></tr>
+        <tr><th>时间</th><th>科目</th><th>任务内容</th><th>完成状况</th></tr>`;
+      
+      for (let i = 0; i < DAYS.length; i++) {
+        const dayKey = DAYS[i];
+        let isFirstRow = true;
+        for (let subj of SUBJECTS) {
+          const tasks = plan[dayKey]?.[subj] || [];
+          const empty = isSubjectEmpty(plan, dayKey, subj);
+          const rowspan = getDayRowspan(plan, dayKey);
+          if (empty) {
+            html += `<tr>${isFirstRow?`<td class="day-header" rowspan="${rowspan}">${DAY_LABELS[i]}</td>`:''}<td>${subj}</td><td class="no-task">无</td><td class="no-task">-</td></tr>`;
+          } else {
+            const validTasks = tasks.filter(t => t !== '无');
+            let isFirstTask = true;
+            validTasks.forEach((task, idx) => {
+              const state = taskStatus[`${dayKey}||${subj}||${task}`] || null;
+              const statusText = state === 'completed' ? '已完成' : (state === 'delayed' ? '已延期' : '未完成');
+              const cls = state === 'completed' ? 'completed' : (state === 'delayed' ? 'delayed' : '');
+              html += `<tr>${isFirstRow?`<td class="day-header" rowspan="${rowspan}">${DAY_LABELS[i]}</td>`:''}${isFirstTask?`<td rowspan="${validTasks.length}">${subj}</td>`:''}<td>${idx+1}、${task}</td><td class="${cls}">${statusText}</td></tr>`;
+              isFirstRow = false;
+              isFirstTask = false;
+            });
+          }
+          if (!empty || isFirstRow) isFirstRow = false;
+        }
+      }
+      html += '</table></body></html>';
+      
+      const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `许家桐理财投资进度_${formatDate(monday)}_${formatDate(sunday)}.xls`;
+      a.click();
+      alert('✅ Excel文件已导出！');
+    }
+
+    function getDayRowspan(plan, dayKey) {
+      let n = 0;
+      for (let subj of SUBJECTS) {
+        const tasks = plan[dayKey]?.[subj] || [];
+        n += isSubjectEmpty(plan, dayKey, subj) ? 1 : tasks.filter(t => t !== '无').length;
+      }
+      return n;
+    }
+
+    // 手动同步
+    document.getElementById('syncStatus').onclick = async () => {
+      if (isConnected) {
+        updateSyncStatus('正在同步...', false);
+        await saveToCloud();
+        await loadFromCloud();
+        updateSyncStatus('✅ 云端已连接', false);
+      }
+    };
+
+    // 周切换
+    document.querySelectorAll('.week-btn').forEach(btn => {
+      btn.onclick = function() {
+        document.querySelectorAll('.week-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentOffset = parseInt(this.dataset.weekOffset);
+        renderCurrentWeek();
+      };
+    });
+
+    document.getElementById('resetCurrentWeekBtn').onclick = resetCurrentWeek;
+    document.getElementById('summaryBtn').onclick = showTotalSummary;
+    document.getElementById('exportBtn').onclick = exportToExcel;
+    document.getElementById('copyLastWeekBtn').onclick = copyLastWeekPlan;
+
+    // 启动
+    document.getElementById('currentDateDisplay').textContent = `📅 今天是：${formatDate(new Date())}`;
+    cloudData = loadFromLocal();
+    renderCurrentWeek();
+    initCloud();
+  })();
+</script>
+</body>
+</html>
