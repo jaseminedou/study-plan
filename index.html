@@ -27,32 +27,10 @@
     }
     h1 { font-size: 2rem; font-weight: 650; color: #4b3a2b; margin-bottom: 0.5rem; }
     .current-date {
-      font-size: 1.1rem; color: #7b6e5e; margin-bottom: 0.3rem;
+      font-size: 1.1rem; color: #7b6e5e; margin-bottom: 1rem;
       font-weight: 500; background: #f3ede4; display: inline-block;
       padding: 0.3rem 1.2rem; border-radius: 2rem;
     }
-    .debug-info {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 1rem;
-      padding: 0.8rem 1rem;
-      margin-bottom: 1rem;
-      font-size: 0.8rem;
-      color: #856404;
-      display: block;
-      word-break: break-all;
-    }
-    .sync-status {
-      font-size: 0.85rem; margin-bottom: 0.5rem;
-      display: flex; align-items: center; gap: 0.3rem; cursor: pointer;
-    }
-    .sync-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: #5a7d4a; display: inline-block;
-    }
-    .sync-dot.syncing { background: #b3956b; animation: pulse 1s infinite; }
-    .sync-dot.error { background: #c44; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
     .week-nav { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0 1.5rem; }
     .week-btn {
       background: #fefaf5; border: 1px solid #cfbc9f;
@@ -61,17 +39,18 @@
     }
     .week-btn.active {
       background: #d9c8b2; border-color: #a78f70; color: #2f261c;
-      box-shadow: 0 4px 10px rgba(140, 110, 70, 0.25);
     }
     .toolbar { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 1.8rem; }
     .btn {
       background: #fefaf5; border: 1px solid #cfbc9f;
       padding: 0.5rem 1.2rem; border-radius: 2.5rem;
       font-weight: 500; color: #4b3a2b; cursor: pointer; font-size: 0.9rem;
+      display: flex; align-items: center; gap: 0.3rem;
     }
     .btn:hover { background: #f3ede4; }
     .btn.primary { background: #ddceb8; border-color: #b3956b; font-weight: 600; }
     .btn.export { background: #d4e8d0; border-color: #8bab7a; color: #2c4720; font-weight: 600; }
+    .btn.import { background: #e8d8f0; border-color: #9b7aab; color: #3a1f47; font-weight: 600; }
     .btn.copy { background: #d0dce8; border-color: #7a8fab; color: #1f2c47; font-weight: 600; }
     .day-section {
       background: #fdfaf6; border-radius: 1.8rem; padding: 1rem;
@@ -129,19 +108,18 @@
       display: none; border: 1px solid #b8cfe0;
     }
     .copy-hint.show { display: block; }
+    .sync-hint {
+      background: #f0e8f5; color: #5a2d6c; padding: 0.5rem 1rem;
+      border-radius: 1rem; font-size: 0.85rem; margin-bottom: 1rem;
+      display: none; border: 1px solid #d0b8e0;
+    }
+    .sync-hint.show { display: block; }
   </style>
 </head>
 <body>
 <div class="container">
   <h1>📚 许家桐理财投资进度</h1>
   <div class="current-date" id="currentDateDisplay"></div>
-  
-  <div class="sync-status" id="syncStatus" title="点击手动同步">
-    <span class="sync-dot" id="syncDot"></span>
-    <span id="syncText">正在初始化...</span>
-  </div>
-  
-  <div class="debug-info" id="debugInfo" style="display:none;"></div>
 
   <div class="week-nav">
     <button class="week-btn" data-week-offset="-1">📅 上周</button>
@@ -153,10 +131,13 @@
     <button class="btn primary" id="summaryBtn">📋 全部完成汇总</button>
     <button class="btn" id="resetCurrentWeekBtn">🔄 重置当前周</button>
     <button class="btn export" id="exportBtn">📥 导出Excel</button>
+    <button class="btn import" id="exportDataBtn">📤 导出数据(同步)</button>
+    <button class="btn import" id="importDataBtn">📥 导入数据(同步)</button>
     <button class="btn copy" id="copyLastWeekBtn" style="display:none;">📋 复制上周计划</button>
   </div>
 
   <div class="copy-hint" id="copyHint">✅ 已成功复制上周计划！</div>
+  <div class="sync-hint" id="syncHint"></div>
 
   <div id="weekLabel" style="font-weight:600; margin-bottom:1rem; color:#4b3a2b;"></div>
   <div id="planContainer"></div>
@@ -169,34 +150,11 @@
 
 <script>
   (function() {
-    // ========== 配置 ==========
-    const TCB_ENV_ID = 'ai-study-d1gpjwvjy7653a66a';
-    const COLLECTION_NAME = 'ai-study';
-    
     const SUBJECTS = ['语文', '数学', '英语', '小四门'];
     const DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
     const DAY_LABELS = ['周一','周二','周三','周四','周五','周六','周日'];
 
-    let cloudData = {};
-    let collection = null;
-    let isConnected = false;
-    let debugLogs = [];
-
-    function debug(msg) {
-      console.log(msg);
-      debugLogs.push(new Date().toLocaleTimeString() + ': ' + msg);
-      const debugDiv = document.getElementById('debugInfo');
-      debugDiv.style.display = 'block';
-      debugDiv.innerHTML = debugLogs.slice(-8).join('<br>');
-    }
-
-    function updateSyncStatus(text, isError) {
-      const dot = document.getElementById('syncDot');
-      const statusText = document.getElementById('syncText');
-      dot.className = 'sync-dot';
-      if (isError) dot.classList.add('error');
-      statusText.textContent = text;
-    }
+    let allData = {};
 
     function getDefaultTasks() {
       return {
@@ -207,118 +165,19 @@
       };
     }
 
-    const STORAGE_KEY = 'study_plan_local_v3';
+    const STORAGE_KEY = 'study_plan_final_v1';
 
-    function loadFromLocal() {
+    function loadData() {
       const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : {};
+      allData = stored ? JSON.parse(stored) : {};
     }
 
-    function saveToLocal(data) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }
-
-    // 加载SDK
-    function loadSDK() {
-      return new Promise((resolve) => {
-        debug('加载SDK...');
-        const script = document.createElement('script');
-        script.src = 'https://web-9gikcbug35bad3a8-1304825656.tcloudbaseapp.com/sdk/2.0.0/tcb.js';
-        script.onload = () => {
-          debug('SDK加载成功');
-          resolve(true);
-        };
-        script.onerror = () => {
-          debug('SDK地址1失败，尝试地址2...');
-          const script2 = document.createElement('script');
-          script2.src = 'https://imgcache.qq.com/qcloud/tcbjs/2.0.0/tcb.js';
-          script2.onload = () => {
-            debug('SDK加载成功(地址2)');
-            resolve(true);
-          };
-          script2.onerror = () => {
-            debug('SDK加载失败');
-            resolve(false);
-          };
-          document.head.appendChild(script2);
-        };
-        document.head.appendChild(script);
-      });
-    }
-
-    async function initCloud() {
-      const sdkLoaded = await loadSDK();
-      if (!sdkLoaded) {
-        updateSyncStatus('⚠️ 离线模式（SDK加载失败）', true);
-        cloudData = loadFromLocal();
-        renderCurrentWeek();
-        return;
-      }
-
-      try {
-        debug('初始化tcb...');
-        const app = tcb.init({ env: TCB_ENV_ID });
-        
-        debug('匿名登录...');
-        const auth = app.auth({ persistence: 'local' });
-        await auth.anonymousAuthProvider().signIn();
-        debug('登录成功');
-        
-        const db = app.database();
-        collection = db.collection(COLLECTION_NAME);
-        debug('数据库连接成功');
-        
-        isConnected = true;
-        updateSyncStatus('✅ 云端已连接', false);
-        
-        await loadFromCloud();
-        renderCurrentWeek();
-        
-      } catch (error) {
-        debug('错误: ' + error.message);
-        updateSyncStatus('⚠️ 离线模式', true);
-        cloudData = loadFromLocal();
-        renderCurrentWeek();
-      }
-    }
-
-    async function loadFromCloud() {
-      if (!collection) { cloudData = loadFromLocal(); return; }
-      try {
-        debug('读取云端数据...');
-        const result = await collection.doc('main_data').get();
-        if (result.data && result.data.length > 0) {
-          cloudData = result.data[0].data || {};
-          debug('云端数据加载成功');
-        } else {
-          debug('云端无数据，使用本地');
-          cloudData = loadFromLocal();
-        }
-        saveToLocal(cloudData);
-      } catch (error) {
-        debug('读取失败: ' + error.message);
-        cloudData = loadFromLocal();
-      }
-    }
-
-    async function saveToCloud() {
-      if (!collection) { saveToLocal(cloudData); return; }
-      try {
-        debug('保存到云端...');
-        await collection.doc('main_data').set({
-          data: cloudData,
-          updatedAt: new Date().toISOString()
-        });
-        saveToLocal(cloudData);
-        debug('保存成功');
-      } catch (error) {
-        debug('保存失败: ' + error.message);
-        saveToLocal(cloudData);
-      }
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
     }
 
     function getWeekData(weekKey) {
-      if (!cloudData[weekKey]) {
+      if (!allData[weekKey]) {
         const defaultTasks = getDefaultTasks();
         const plan = {};
         for (let d of DAYS) {
@@ -327,15 +186,64 @@
             plan[d][subj] = [...defaultTasks[subj]];
           }
         }
-        cloudData[weekKey] = { plan: plan, taskStatus: {} };
-        saveToCloud();
+        allData[weekKey] = { plan: plan, taskStatus: {} };
+        saveData();
       }
-      return cloudData[weekKey];
+      return allData[weekKey];
     }
 
     function updateWeekData(weekKey, newData) {
-      cloudData[weekKey] = newData;
-      saveToCloud();
+      allData[weekKey] = newData;
+      saveData();
+    }
+
+    function exportSyncData() {
+      const exportObj = { version: '1.0', time: new Date().toISOString(), data: allData };
+      const text = JSON.stringify(exportObj);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showHint('syncHint', '✅ 数据已复制到剪贴板！请粘贴发送到微信，在另一设备上导入。', 'success');
+        }).catch(() => downloadSyncFile(text));
+      } else {
+        downloadSyncFile(text);
+      }
+    }
+
+    function downloadSyncFile(text) {
+      const blob = new Blob([text], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '学习计划_同步数据_' + new Date().toISOString().slice(0,10) + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showHint('syncHint', '✅ 数据文件已下载！请发送到微信，在另一设备上导入。', 'success');
+    }
+
+    function importSyncData() {
+      const text = prompt('请粘贴从另一设备导出的同步数据：');
+      if (!text || !text.trim()) return;
+      try {
+        const importObj = JSON.parse(text.trim());
+        if (!importObj.data) throw new Error('无效数据');
+        if (confirm('确定导入数据吗？当前数据将被覆盖。')) {
+          allData = importObj.data;
+          saveData();
+          showHint('syncHint', '✅ 数据导入成功！', 'success');
+          renderCurrentWeek();
+        }
+      } catch (e) {
+        showHint('syncHint', '❌ 数据格式不正确，请重新复制粘贴。', 'error');
+      }
+    }
+
+    function showHint(id, message, type) {
+      const hint = document.getElementById(id);
+      hint.textContent = message;
+      hint.className = (id === 'syncHint' ? 'sync-hint' : 'copy-hint') + ' show';
+      hint.style.background = type === 'error' ? '#fde8e8' : (id === 'syncHint' ? '#f0e8f5' : '#e8f0fa');
+      hint.style.color = type === 'error' ? '#8c2d2d' : (id === 'syncHint' ? '#5a2d6c' : '#3a5a8c');
+      setTimeout(() => hint.classList.remove('show'), 4000);
     }
 
     let currentOffset = 0;
@@ -525,8 +433,8 @@
           newPlan[d][subj] = [...(lastWeekData.plan[d]?.[subj] || getDefaultTasks()[subj])];
         }
       }
-      cloudData[currentWeekKey] = { plan: newPlan, taskStatus: {} };
-      saveToCloud();
+      allData[currentWeekKey] = { plan: newPlan, taskStatus: {} };
+      saveData();
       document.getElementById('copyHint').classList.add('show');
       setTimeout(() => document.getElementById('copyHint').classList.remove('show'), 3000);
       renderCurrentWeek();
@@ -534,7 +442,7 @@
 
     function showTotalSummary() {
       let totalCompleted = 0, totalDelayed = 0, totalTasks = 0;
-      for (let data of Object.values(cloudData)) {
+      for (let data of Object.values(allData)) {
         const plan = data.plan || {};
         const status = data.taskStatus || {};
         for (let day of DAYS) {
@@ -605,6 +513,7 @@
       a.href = URL.createObjectURL(blob);
       a.download = `许家桐理财投资进度_${formatDate(monday)}_${formatDate(sunday)}.xls`;
       a.click();
+      URL.revokeObjectURL(a.href);
       alert('✅ Excel文件已导出！');
     }
 
@@ -617,17 +526,6 @@
       return n;
     }
 
-    // 手动同步
-    document.getElementById('syncStatus').onclick = async () => {
-      if (isConnected) {
-        updateSyncStatus('正在同步...', false);
-        await saveToCloud();
-        await loadFromCloud();
-        updateSyncStatus('✅ 云端已连接', false);
-      }
-    };
-
-    // 周切换
     document.querySelectorAll('.week-btn').forEach(btn => {
       btn.onclick = function() {
         document.querySelectorAll('.week-btn').forEach(b => b.classList.remove('active'));
@@ -641,12 +539,12 @@
     document.getElementById('summaryBtn').onclick = showTotalSummary;
     document.getElementById('exportBtn').onclick = exportToExcel;
     document.getElementById('copyLastWeekBtn').onclick = copyLastWeekPlan;
+    document.getElementById('exportDataBtn').onclick = exportSyncData;
+    document.getElementById('importDataBtn').onclick = importSyncData;
 
-    // 启动
     document.getElementById('currentDateDisplay').textContent = `📅 今天是：${formatDate(new Date())}`;
-    cloudData = loadFromLocal();
+    loadData();
     renderCurrentWeek();
-    initCloud();
   })();
 </script>
 </body>
